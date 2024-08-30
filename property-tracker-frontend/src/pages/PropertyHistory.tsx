@@ -1,19 +1,27 @@
 import React, {useState} from 'react';
+import usePropertyRegistry from '../hooks/usePropertyRegistry';
 
 const PropertyHistory: React.FC = () => {
+  const {contract} = usePropertyRegistry();
   const [propertyID, setPropertyID] = useState('');
   const [history, setHistory] = useState<string[]>([]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     // Blockchain interaction will be added here in the future
-    console.log('Fetching History for Property ID:', propertyID);
-    // Placeholder history data
-    setHistory([
-      'Owner1 -> Owner2 (01/01/2020)',
-      'Owner2 -> Owner3 (02/02/2021)',
-      'Owner3 -> Owner4 (03/03/2022)',
-    ]);
+    if (contract) {
+      try {
+        const historyData = await contract.methods
+          .getOwnershipHistory(propertyID)
+          .call();
+        historyData
+          ? setHistory(historyData)
+          : console.log('History data is unavailable');
+        console.log('Ownership History:', historyData);
+      } catch (err) {
+        console.error('Error fetching history:', err);
+      }
+    }
   };
 
   return (

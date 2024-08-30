@@ -1,13 +1,25 @@
 import React, {useState} from 'react';
+import usePropertyRegistry from '../hooks/usePropertyRegistry';
 
 const TransferOwnership: React.FC = () => {
+  const {contract, account} = usePropertyRegistry();
   const [propertyID, setPropertyID] = useState('');
   const [newOwnerName, setNewOwnerName] = useState('');
 
-  const handleTransfer = (e: React.FormEvent) => {
+  const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Blockchain interaction will be added here in the future
-    console.log('Ownership Transferred:', {propertyID, newOwnerName});
+    if (contract && account) {
+      try {
+        await contract.methods
+          .transferOwnership(propertyID, newOwnerName)
+          .send({
+            from: account,
+          });
+        console.log('Ownership Transferred:', {propertyID, newOwnerName});
+      } catch (err) {
+        console.error('Error transferring ownership:', err);
+      }
+    }
   };
 
   return (

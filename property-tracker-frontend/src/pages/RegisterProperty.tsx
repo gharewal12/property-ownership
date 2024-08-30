@@ -1,20 +1,31 @@
 import React, {useState} from 'react';
+import usePropertyRegistry from '../hooks/usePropertyRegistry';
 
 const RegisterProperty: React.FC = () => {
+  const {contract, account} = usePropertyRegistry();
   const [propertyID, setPropertyID] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [location, setLocation] = useState('');
   const [documentHash, setDocumentHash] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Blockchain interaction will be added here in the future
-    console.log('Property Registered:', {
-      propertyID,
-      ownerName,
-      location,
-      documentHash,
-    });
+    if (contract && account) {
+      try {
+        await contract.methods
+          .registerProperty(propertyID, location, documentHash)
+          .send({
+            from: account,
+          });
+        console.log('Property Registered:', {
+          propertyID,
+          location,
+          documentHash,
+        });
+      } catch (err) {
+        console.error('Error registering property:', err);
+      }
+    }
   };
 
   return (

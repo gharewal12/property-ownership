@@ -1,10 +1,10 @@
 import {useState, useEffect} from 'react';
-import Web3 from 'web3';
+import Web3, { Contract } from 'web3';
 import PropertyRegistry from '../contracts/PropertyRegistry.json';
 
 const usePropertyRegistry = () => {
   const [web3, setWeb3] = useState<Web3 | null>(null);
-  const [contract, setContract] = useState<any | null>(null);
+  const [contract, setContract] = useState<Contract<any> | null>(null);
   const [account, setAccount] = useState<string | null>(null);
 
   useEffect(() => {
