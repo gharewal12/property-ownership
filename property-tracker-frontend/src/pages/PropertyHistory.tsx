@@ -1,16 +1,19 @@
 import React, {useState} from 'react';
 import usePropertyRegistry from '../hooks/usePropertyRegistry';
+import {useGlobalContext} from '../contexts/GlobalContext';
 
 const PropertyHistory: React.FC = () => {
   const {contract} = usePropertyRegistry();
   const [propertyID, setPropertyID] = useState('');
   const [history, setHistory] = useState<string[]>([]);
+  const {setLoading} = useGlobalContext();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     // Blockchain interaction will be added here in the future
     if (contract) {
       try {
+        setLoading(true);
         const historyData = await contract.methods
           .getOwnershipHistory(propertyID)
           .call();
@@ -20,6 +23,8 @@ const PropertyHistory: React.FC = () => {
         console.log('Ownership History:', historyData);
       } catch (err) {
         console.error('Error fetching history:', err);
+      } finally {
+        setLoading(false);
       }
     }
   };

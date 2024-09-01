@@ -6,34 +6,37 @@ import TransferOwnership from './pages/TransferOwnership';
 import PropertyHistory from './pages/PropertyHistory';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import GlobalContext from './contexts/GlobalContext';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div className='flex flex-col min-h-screen'>
-        <Header />
-        <main className='flex-grow'>
-          <Routes>
-            <Route
-              path='/'
-              element={<Home />}
-            />
-            <Route
-              path='/register'
-              element={<RegisterProperty />}
-            />
-            <Route
-              path='/transfer'
-              element={<TransferOwnership />}
-            />
-            <Route
-              path='/history'
-              element={<PropertyHistory />}
-            />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <GlobalContext>
+        <div className='flex flex-col min-h-screen'>
+          <Header />
+          <main className='flex-grow'>
+            <Routes>
+              <Route
+                path='/'
+                element={<Home />}
+              />
+              <Route
+                path='/register'
+                element={<RegisterProperty />}
+              />
+              <Route
+                path='/transfer'
+                element={<TransferOwnership />}
+              />
+              <Route
+                path='/history'
+                element={<PropertyHistory />}
+              />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </GlobalContext>
     </Router>
   );
 };

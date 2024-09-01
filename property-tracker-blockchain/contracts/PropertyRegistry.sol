@@ -5,6 +5,7 @@ contract PropertyRegistry {
     struct Property {
         string id;
         string location;
+        string ownerName;
         address currentOwner;
         string documentHash;
         address[] previousOwners;
@@ -22,6 +23,7 @@ contract PropertyRegistry {
     function registerProperty(
         string memory _id,
         string memory _location,
+        string memory _ownerName,
         string memory _documentHash
     ) public {
         require(
@@ -32,14 +34,19 @@ contract PropertyRegistry {
         Property storage newProperty = properties[_id];
         newProperty.id = _id;
         newProperty.location = _location;
+        newProperty.ownerName = _ownerName;
         newProperty.currentOwner = msg.sender;
-        newProperty.documentHash = _documentHash;
-        newProperty.previousOwners.push(msg.sender);
+        newProperty.documentHash = _documentHash;      
+        newProperty.previousOwners.push(msg.sender);  
 
         emit PropertyRegistered(_id, msg.sender);
     }
 
-    function transferOwnership(string memory _id, address _newOwner) public {
+    function transferOwnership(
+        string memory _id,
+        string memory _newOwnerName,
+        address _newOwner
+    ) public {
         Property storage property = properties[_id];
         require(
             property.currentOwner == msg.sender,
@@ -47,7 +54,8 @@ contract PropertyRegistry {
         );
         require(_newOwner != address(0), "New owner address is invalid");
 
-        property.previousOwners.push(property.currentOwner);
+        property.previousOwners.push(_newOwner);
+        property.ownerName = _newOwnerName;
         property.currentOwner = _newOwner;
 
         emit OwnershipTransferred(_id, msg.sender, _newOwner);

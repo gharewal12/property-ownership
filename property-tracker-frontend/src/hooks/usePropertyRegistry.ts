@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import Web3, { Contract } from 'web3';
+import Web3, {Contract} from 'web3';
 import PropertyRegistry from '../contracts/PropertyRegistry.json';
 
 const usePropertyRegistry = () => {
@@ -8,6 +8,7 @@ const usePropertyRegistry = () => {
   const [account, setAccount] = useState<string | null>(null);
 
   useEffect(() => {
+    let registryContract: Contract<any>;
     const init = async () => {
       const ethereum = (window as any).ethereum;
       if (ethereum) {
@@ -24,11 +25,30 @@ const usePropertyRegistry = () => {
         const deployedNetwork = (
           PropertyRegistry.networks as {[key: string]: any}
         )[networkIdString];
-        const registryContract = new web3Instance.eth.Contract(
+
+        registryContract = new web3Instance.eth.Contract(
           PropertyRegistry.abi,
-          deployedNetwork && deployedNetwork.address
+          deployedNetwork?.address
         );
         setContract(registryContract);
+
+        //Watch Events
+        if (registryContract && registryContract.events) {
+          registryContract?.events.allEvents().on('data', (event) => {
+            const {event: eventName, returnValues} = event;
+
+            switch (eventName) {
+              case 'PropertyRegistered':
+                console.log('Property Registered:', returnValues);
+                break;
+              case 'OwnershipTransferred':
+                console.log('Ownership Transferred:', returnValues);
+                break;
+              default:
+                console.log('Other Event:', eventName, returnValues);
+            }
+          });
+        }
       }
     };
 

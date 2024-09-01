@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import usePropertyRegistry from '../hooks/usePropertyRegistry';
+import {useGlobalContext} from '../contexts/GlobalContext';
 
 const RegisterProperty: React.FC = () => {
   const {contract, account} = usePropertyRegistry();
@@ -7,13 +8,15 @@ const RegisterProperty: React.FC = () => {
   const [ownerName, setOwnerName] = useState('');
   const [location, setLocation] = useState('');
   const [documentHash, setDocumentHash] = useState('');
+  const {setLoading} = useGlobalContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (contract && account) {
+      setLoading(true);
       try {
         await contract.methods
-          .registerProperty(propertyID, location, documentHash)
+          .registerProperty(propertyID, location, ownerName, documentHash)
           .send({
             from: account,
           });
@@ -24,6 +27,8 @@ const RegisterProperty: React.FC = () => {
         });
       } catch (err) {
         console.error('Error registering property:', err);
+      } finally {
+        setLoading(false);
       }
     }
   };
