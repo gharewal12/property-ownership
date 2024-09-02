@@ -8,7 +8,7 @@ const TransferOwnership: React.FC = () => {
   const [newOwnerName, setNewOwnerName] = useState('');
   const [newOwnerAddress, setNewOwnerAddress] = useState('');
   const {web3} = usePropertyRegistry();
-  const {setLoading} = useGlobalContext();
+  const {setLoading, setAlert} = useGlobalContext();
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +25,17 @@ const TransferOwnership: React.FC = () => {
           .send({
             from: account,
           });
-        console.log('Ownership Transferred:', {propertyID, newOwnerName});
+        setAlert({
+          open: true,
+          message: ' Ownership transferred successfully',
+          severity: 'success',
+        });
       } catch (err) {
+        setAlert({
+          open: true,
+          message: ' Error occured while transferring ownership',
+          severity: 'error',
+        });
         console.error('Error transferring ownership:', err);
       } finally {
         setLoading(false);

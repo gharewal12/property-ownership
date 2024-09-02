@@ -8,7 +8,7 @@ const RegisterProperty: React.FC = () => {
   const [ownerName, setOwnerName] = useState('');
   const [location, setLocation] = useState('');
   const [documentHash, setDocumentHash] = useState('');
-  const {setLoading} = useGlobalContext();
+  const {setLoading, setAlert} = useGlobalContext();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,12 +20,17 @@ const RegisterProperty: React.FC = () => {
           .send({
             from: account,
           });
-        console.log('Property Registered:', {
-          propertyID,
-          location,
-          documentHash,
+        setAlert({
+          open: true,
+          message: ' Property registerd successfully',
+          severity: 'success',
         });
       } catch (err) {
+        setAlert({
+          open: true,
+          message: ' Error occured while regitering property',
+          severity: 'error',
+        });
         console.error('Error registering property:', err);
       } finally {
         setLoading(false);
