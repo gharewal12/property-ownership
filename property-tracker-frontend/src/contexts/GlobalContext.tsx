@@ -38,7 +38,7 @@ const GlobalContextProvider = ({children}: {children: React.ReactNode}) => {
       alert,
       setAlert,
     }),
-    [loading, setLoading]
+    [loading, setLoading, alert, setAlert]
   );
   return (
     <GlobalContext.Provider value={contextValue}>

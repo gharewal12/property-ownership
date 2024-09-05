@@ -9,15 +9,17 @@ contract PropertyRegistry {
         address currentOwner;
         string documentHash;
         address[] previousOwners;
+        uint[] transactionDates;
     }
 
     mapping(string => Property) public properties;
 
-    event PropertyRegistered(string id, address owner);
+    event PropertyRegistered(string id, address owner, uint256 date);
     event OwnershipTransferred(
         string id,
         address previousOwner,
-        address newOwner
+        address newOwner,
+        uint256 date
     );
 
     function registerProperty(
@@ -36,10 +38,11 @@ contract PropertyRegistry {
         newProperty.location = _location;
         newProperty.ownerName = _ownerName;
         newProperty.currentOwner = msg.sender;
-        newProperty.documentHash = _documentHash;      
-        newProperty.previousOwners.push(msg.sender);  
+        newProperty.documentHash = _documentHash;
+        newProperty.previousOwners.push(msg.sender);
+        newProperty.transactionDates.push(block.timestamp);
 
-        emit PropertyRegistered(_id, msg.sender);
+        emit PropertyRegistered(_id, msg.sender, block.timestamp);
     }
 
     function transferOwnership(
@@ -57,13 +60,15 @@ contract PropertyRegistry {
         property.previousOwners.push(_newOwner);
         property.ownerName = _newOwnerName;
         property.currentOwner = _newOwner;
+        property.transactionDates.push(block.timestamp);
 
-        emit OwnershipTransferred(_id, msg.sender, _newOwner);
+        emit OwnershipTransferred(_id, msg.sender, _newOwner, block.timestamp);
     }
 
     function getOwnershipHistory(
         string memory _id
-    ) public view returns (address[] memory) {
-        return properties[_id].previousOwners;
+    ) public view returns (address[] memory, uint[] memory) {
+        Property memory property = properties[_id];
+        return (property.previousOwners, property.transactionDates);
     }
 }

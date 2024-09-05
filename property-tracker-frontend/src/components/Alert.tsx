@@ -6,7 +6,7 @@ import {useGlobalContext} from '../contexts/GlobalContext';
 
 export interface AlertState {
   open: boolean;
-  severity: 'success' | 'error' | 'info';
+  severity: 'success' | 'error' | 'info' | 'warning';
   message: string;
 }
 
@@ -26,7 +26,7 @@ const Alert = () => {
         anchorOrigin={{vertical: 'top', horizontal: 'right'}}
         open={alert.open}
         onClose={handleClose}
-        autoHideDuration={6000}
+        autoHideDuration={5000}
         TransitionComponent={Grow}
         key={'snackbar'}
       >

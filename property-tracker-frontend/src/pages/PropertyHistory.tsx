@@ -6,31 +6,37 @@ import { motion } from 'framer-motion';
 const PropertyHistory: React.FC = () => {
   const { contract } = usePropertyRegistry();
   const [propertyID, setPropertyID] = useState('');
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useState<{owner: string, date:string}[]>([]);
   const { setLoading, setAlert } = useGlobalContext();
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (contract) {
-      try {
-        setLoading(true);
-        const historyData = await contract.methods
-          .getOwnershipHistory(propertyID)
-          .call();
-        if (historyData && historyData.length > 0) {
-          setHistory(historyData);
-          setAlert({
-            open: true,
-            message: 'History retrieved successfully',
-            severity: 'success',
-          });
-        } else {
-          setAlert({
-            open: true,
-            message: 'No history found for this property',
-            severity: 'info',
-          });
-        }
+      try{
+          setLoading(true);
+          const data = await contract?.methods
+            .getOwnershipHistory(propertyID)
+            .call();
+            const {'0' : owners, '1' : dates} = data as any;
+            const historyData = owners?.map((owner:string, index: number)=>({
+              owner,
+              date: new Date( Number(dates[index]) *1000).toLocaleDateString('en-US',{year:'numeric', month:'short', day:'2-digit'})
+            }))
+          if (historyData && historyData?.length > 0) {
+            setHistory(historyData);
+            setAlert({
+              open: true,
+              message: 'History retrieved successfully',
+              severity: 'success',
+            });
+          } else {
+            setHistory([]);
+            setAlert({
+              open: true,
+              message: 'No history found for this property',
+              severity: 'info',
+            });
+          }
       } catch (err) {
         setAlert({
           open: true,
@@ -90,7 +96,12 @@ const PropertyHistory: React.FC = () => {
           <h3 className="text-2xl font-semibold mb-4">Ownership History:</h3>
           <ul className="list-disc pl-5 space-y-2 text-gray-700">
             {history.map((entry, index) => (
-              <li key={index}>{entry}</li>
+              <li key={index}>
+                <div className='flex justify-between'>
+                  <div>{entry.owner}</div>
+                  <div>{entry.date}</div>
+                </div>
+                </li>
             ))}
           </ul>
         </motion.div>

@@ -16,7 +16,7 @@ const TransferOwnership: React.FC = () => {
     if (web3 && !web3.utils.isAddress(newOwnerAddress)) {
       setAlert({
         open: true,
-        message: `Invalid Ethereum address: ${newOwnerAddress}`,
+        message: `Invalid address: ${newOwnerAddress}`,
         severity: 'error',
       });
       return;
